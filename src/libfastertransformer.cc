@@ -371,11 +371,10 @@ ModelState::ModelState(TRITONBACKEND_Model* triton_model)
     model_instance_size * instance_group_count >=  gpu_size);
   if (!multi_model_instance_valid) {
     std::stringstream formatted_error;
-    ss << "1. Number of visible GPUs (" << gpu_size << ") must be evenly divisble by TP * PP (" << tp_pp_size << ") \n"
+    formatted_error << "1. Number of visible GPUs (" << gpu_size << ") must be evenly divisble by TP * PP (" << tp_pp_size << ") \n"
       "2. Number of visible GPUs (" << gpu_size << ") must be <= instance count * TP * PP (" << instance_group_count * tp_pp_size << ") \n"
       "3. Multi-Node Inference only support one model instance (nodes requested: (" << num_nodes << "), instances requested: (" << instance_group_count << ")) \n"
-    THROW_IF_BACKEND_MODEL_ERROR(TRITONSERVER_ErrorNew(TRITONSERVER_ERROR_UNSUPPORTED,
-      ));
+    THROW_IF_BACKEND_MODEL_ERROR(TRITONSERVER_ErrorNew(TRITONSERVER_ERROR_UNSUPPORTED, formatted_error.str()));
   }
 
   int64_t max_batch_size = 0;
